@@ -1,0 +1,100 @@
+---
+title: "Colateral y Crédito Comercial"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+
+```
+
+# Base de datos y conexión desde R
+
+# Avances previos
+
+```{r}
+
+# librerías
+library(RODBC)
+library(stringr)
+
+# conexión con la bd
+ch <- odbcConnect("Teradata", uid = "jvelezve", pwd = "benhelkias")
+
+# columnas de la tabla
+mycol <- sqlColumns(ch, "PRO_SK_DATA_V.V_GT23_F341_SOL1")
+
+# nombre de la tabla
+tabla <- "PRO_SK_DATA_V.V_GT23_F341_SOL1"
+
+```
+
+```{r}
+
+ruta <- "Bases/columnas341.csv"
+
+columnas <- read_csv(ruta)
+
+```
+
+# Nuevas queries y experimentación
+
+  1. Que tan pobladas están las variables? Recuerdo que hay variables que tienen muchísimos NA. Para algunas puede ser normal como VALOR_GARANTIA_ME que mide el valor de la garantía denominada en moneda extranjera.
+
+  2. Porcentaje de créditos con garantía (TIENE_GARANTIA)
+
+  3. Porcentaje de créditos con garantía del crédito.
+
+Creo estas tres cosas se deben hacer por tipo de crédito (CARTERA_TIPO)
+
+## Valores faltantes
+
+```{r}
+
+consulta <- character()
+
+for (col in columnas$COLUMN_NAME){
+  
+  cadena <- paste0("COUNT(*)-COUNT(",col,") AS ", col)
+  
+  consulta <- paste(consulta, cadena, sep = ", ")
+}
+
+consulta <- str_remove(consulta, ",")
+
+consulta <- paste0("SELECT", consulta)
+
+consulta <- paste0(consulta, " FROM ", tabla)
+
+df_nas <- sqlQuery(ch, consulta)
+
+consulta
+
+```
+
+## Créditos con garantía
+
+```{r}
+
+consulta <- "SELECT CARTERA_TIPO, COUNT(TIENE_GARANTIA) / COUNT(*) AS PCT_GARANTIA GROUP BY CARTERA_TIPO"
+
+consulta <- paste0(consulta, " FROM ", tabla)
+
+df_garantia <- sqlQuery(ch, consulta)
+
+consulta
+
+```
+
+## Preguntas adicionales
+
+  1. Definir préstamos en default si tiene 30 días o más de mora. Ver la cross-tabulation entre default y tener garantía.
+
+  2. Ver el share de préstamos en default por CIIU.
+  
+  3. Ver el ratio de garantía/crédito por CIIU. 
+  
+  4. Explorar que tan populado es el tipo de garantía y ver como varía su valor. 
+ 

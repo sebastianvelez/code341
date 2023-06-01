@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 
 # librerías
 library(RODBC)
-library(stringr)
+library(readr)
 
 # conexión con la bd
 ch <- odbcConnect("Teradata", uid = "jvelezve", pwd = "benhelkias")
@@ -33,7 +33,7 @@ tabla <- "PRO_SK_DATA_V.V_GT23_F341_SOL1"
 
 ```{r}
 
-ruta <- "Bases/columnas341.csv"
+ruta <- "C:/Users/jvelezve/OneDrive - Banco de la República/Documents/Bancos/Felipe and Rebecca/output/columnas341.csv"
 
 columnas <- read_csv(ruta)
 
@@ -70,7 +70,7 @@ consulta <- paste0(consulta, " FROM ", tabla)
 
 df_nas <- sqlQuery(ch, consulta)
 
-consulta
+save(df_nas, file = "C:/Users/jvelezve/OneDrive - Banco de la República/Documents/Bancos/Felipe and Rebecca/output/Nas_by_col.rdata")
 
 ```
 

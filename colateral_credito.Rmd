@@ -78,7 +78,7 @@ save(df_nas, file = "C:/Users/jvelezve/OneDrive - Banco de la República/Documen
 
 ```{r}
 
-consulta <- "SELECT CARTERA_TIPO, COUNT(TIENE_GARANTIA) / COUNT(*) AS PCT_GARANTIA GROUP BY CARTERA_TIPO"
+consulta <- "SELECT CARTERA_TIPO, COUNT(TIENE_GARANTIA) AS SIN_NA, COUNT(*) AS TOTAL GROUP BY CARTERA_TIPO"
 
 consulta <- paste0(consulta, " FROM ", tabla)
 

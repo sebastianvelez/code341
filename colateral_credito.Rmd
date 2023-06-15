@@ -78,7 +78,9 @@ save(df_nas, file = "C:/Users/jvelezve/OneDrive - Banco de la República/Documen
 
 ```{r}
 
-consulta <- "SELECT CARTERA_TIPO, COUNT(TIENE_GARANTIA) AS SIN_NA, COUNT(*) AS TOTAL GROUP BY CARTERA_TIPO"
+# Agregación general
+
+consulta <- "SELECT CARTERA_TIPO, TIENE_GARANTIA, COUNT(TIENE_GARANTIA) AS N_REG, GROUP BY CARTERA_TIPO, TIENE_GARANTIA"
 
 consulta <- paste0(consulta, " FROM ", tabla)
 
@@ -87,6 +89,21 @@ df_garantia <- sqlQuery(ch, consulta)
 consulta
 
 ```
+
+```{r}
+
+# Agregación con más detalle
+
+consulta <- "SELECT CARTERA_TIPO, TIENE_GARANTIA, TIPO_GARANTIA, COUNT(TIENE_GARANTIA) AS N_REG, GROUP BY CARTERA_TIPO, TIENE_GARANTIA, TIPO_GARANTIA"
+
+consulta <- paste0(consulta, " FROM ", tabla)
+
+df_garantia <- sqlQuery(ch, consulta)
+
+consulta
+
+```
+
 
 ## Preguntas adicionales
 
@@ -97,4 +114,21 @@ consulta
   3. Ver el ratio de garantía/crédito por CIIU. 
   
   4. Explorar que tan populado es el tipo de garantía y ver como varía su valor. 
- 
+
+```{r}
+
+# Pregunta 1
+
+consulta <- paste0(
+ "SELECT TIENE_GARANTIA, DIAS_DE_MORA, COUNT(*) AS N_REG, ",
+ "CASE WHEN DIAS_DE_MORA >= 30 THEN 1 ELSE 0 END AS DEFAULT ",
+ "GROUP BY TIENE_GARANTIA, DEFAULT"
+)
+
+consulta <- paste0(consulta, " FROM ", tabla)
+
+df_defaults <- sqlQuery(ch, consulta)
+
+consulta
+
+```

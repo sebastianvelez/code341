@@ -6,7 +6,7 @@ date: "`r Sys.Date()`"
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 
 ```
 
@@ -21,7 +21,7 @@ library(RODBC)
 library(readr)
 
 # conexión con la bd
-ch <- odbcConnect("Teradata", uid = "jvelezve", pwd = "benhelkias")
+ch <- odbcConnect("Teradata", uid = "jvelezve", pwd = "jindec2023")
 
 # columnas de la tabla
 mycol <- sqlColumns(ch, "PRO_SK_DATA_V.V_GT23_F341_SOL1")
@@ -51,7 +51,8 @@ Creo estas tres cosas se deben hacer por tipo de crédito (CARTERA_TIPO)
 
 ## Valores faltantes
 
-```{r}
+```{r, eval=FALSE}
+library(stringr)
 
 consulta <- character()
 
@@ -86,7 +87,7 @@ consulta <- paste0(consulta, " FROM ", tabla)
 
 df_garantia <- sqlQuery(ch, consulta)
 
-consulta
+df_garantia
 
 ```
 

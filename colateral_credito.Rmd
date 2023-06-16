@@ -14,11 +14,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Avances previos
 
-```{r}
+```{r libraries}
 
 # librerías
 library(RODBC)
 library(readr)
+library(kableExtra)
 
 # conexión con la bd
 ch <- odbcConnect("Teradata", uid = "jvelezve", pwd = "jindec2023")
@@ -31,7 +32,7 @@ tabla <- "PRO_SK_DATA_V.V_GT23_F341_SOL1"
 
 ```
 
-```{r}
+```{r ruta}
 
 ruta <- "C:/Users/jvelezve/OneDrive - Banco de la República/Documents/Bancos/Felipe and Rebecca/output/columnas341.csv"
 
@@ -51,7 +52,7 @@ Creo estas tres cosas se deben hacer por tipo de crédito (CARTERA_TIPO)
 
 ## Valores faltantes
 
-```{r, eval=FALSE}
+```{r NAS, eval=FALSE}
 library(stringr)
 
 consulta <- character()
@@ -77,7 +78,7 @@ save(df_nas, file = "C:/Users/jvelezve/OneDrive - Banco de la República/Documen
 
 ## Créditos con garantía
 
-```{r}
+```{r garantia1}
 
 # Agregación general
 
@@ -87,7 +88,7 @@ consulta <- paste0("SELECT CARTERA_TIPO, TIENE_GARANTIA, COUNT(TIENE_GARANTIA) A
 
 df_garantia <- sqlQuery(ch, consulta)
 
-df_garantia
+kbl(df_garantia)
 
 ```
 
@@ -101,7 +102,7 @@ consulta <- paste0("SELECT CARTERA_TIPO, TIENE_GARANTIA, TIPO_GARANTIA, COUNT(TI
 
 df_garantia <- sqlQuery(ch, consulta)
 
-consulta
+kbl(df_garantia)
 
 ```
 
@@ -116,7 +117,7 @@ consulta
   
   4. Explorar que tan populado es el tipo de garantía y ver como varía su valor. 
 
-```{r}
+```{r garantia2}
 
 # Pregunta 1
 
@@ -131,5 +132,7 @@ consulta <- paste0(
 df_defaults <- sqlQuery(ch, consulta)
 
 consulta
+
+kbl(df_defaults)
 
 ```

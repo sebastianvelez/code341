@@ -81,9 +81,9 @@ save(df_nas, file = "C:/Users/jvelezve/OneDrive - Banco de la República/Documen
 
 # Agregación general
 
-consulta <- "SELECT CARTERA_TIPO, TIENE_GARANTIA, COUNT(TIENE_GARANTIA) AS N_REG GROUP BY CARTERA_TIPO, TIENE_GARANTIA"
-
-consulta <- paste0(consulta, " FROM ", tabla)
+consulta <- paste0("SELECT CARTERA_TIPO, TIENE_GARANTIA, COUNT(TIENE_GARANTIA) AS N_REG ",
+                   "FROM ", tabla, " ", 
+                   "GROUP BY CARTERA_TIPO, TIENE_GARANTIA")
 
 df_garantia <- sqlQuery(ch, consulta)
 
@@ -95,9 +95,9 @@ df_garantia
 
 # Agregación con más detalle
 
-consulta <- "SELECT CARTERA_TIPO, TIENE_GARANTIA, TIPO_GARANTIA, COUNT(TIENE_GARANTIA) AS N_REG GROUP BY CARTERA_TIPO, TIENE_GARANTIA, TIPO_GARANTIA"
-
-consulta <- paste0(consulta, " FROM ", tabla)
+consulta <- paste0("SELECT CARTERA_TIPO, TIENE_GARANTIA, TIPO_GARANTIA, COUNT(TIENE_GARANTIA) AS N_REG ",
+                   "FROM ", tabla, " ", 
+                   "GROUP BY CARTERA_TIPO, TIENE_GARANTIA, TIPO_GARANTIA")
 
 df_garantia <- sqlQuery(ch, consulta)
 
@@ -121,12 +121,12 @@ consulta
 # Pregunta 1
 
 consulta <- paste0(
- "SELECT TIENE_GARANTIA, DIAS_DE_MORA, COUNT(*) AS N_REG, ",
- "CASE WHEN DIAS_DE_MORA >= 30 THEN 1 ELSE 0 END AS EN_MORA ",
- "GROUP BY TIENE_GARANTIA, EN_MORA"
+  "SELECT TIENE_GARANTIA, ",
+  "CASE WHEN DIAS_DE_MORA >= 30 THEN 1 ELSE 0 END AS EN_MORA, ",
+  "COUNT(*) AS N_REG ",
+  "FROM ", tabla, " ",
+  "GROUP BY TIENE_GARANTIA, EN_MORA"
 )
-
-consulta <- paste0(consulta, " FROM ", tabla)
 
 df_defaults <- sqlQuery(ch, consulta)
 

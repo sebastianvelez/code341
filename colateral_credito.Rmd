@@ -189,3 +189,30 @@ df_garantias <- sqlQuery(ch, consulta)
 kbl(df_garantias)
 
 ```
+
+## Estadística descriptiva
+
+```{r}
+
+# Estadística descriptiva
+
+numericas <- c("SALDO_CAPITAL_ML", "SALDO_INTERESES_ML", "OTROS_CONCEPTOS_ML", "PROVISIONES_INDIVIDUALES_ML", "VALOR_GARANTIA_ML")
+
+suma_numericas <- paste0("SUM(", numericas, ") AS ", numericas)
+
+suma_numericas <- paste(suma_numericas, collapse = ", ")
+
+consulta <- paste0(
+  "SELECT FECHA_INFORMACION, CARTERA_TIPO, TIENE_GARANTIA, TIPO_GARANTIA, ",
+  suma_numericas,
+  " FROM ", tabla, " ",
+  "GROUP BY FECHA_INFORMACION, CARTERA_TIPO, TIENE_GARANTIA, TIPO_GARANTIA"
+)
+
+consulta
+
+df_ts <- sqlQuery(ch, consulta)
+
+kbl(df_ts)
+
+```

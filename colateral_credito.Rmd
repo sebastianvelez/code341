@@ -106,20 +106,13 @@ kbl(df_garantia)
 
 ```
 
-
 ## Preguntas adicionales
 
   1. Definir préstamos en default si tiene 30 días o más de mora. Ver la cross-tabulation entre default y tener garantía.
+  
 
-  2. Ver el share de préstamos en default por CIIU.
-  
-  3. Ver el ratio de garantía/crédito por CIIU. 
-  
-  4. Explorar que tan populado es el tipo de garantía y ver como varía su valor. 
 
 ```{r garantia2}
-
-# Pregunta 1
 
 consulta <- paste0(
   "SELECT TIENE_GARANTIA, ",
@@ -131,8 +124,68 @@ consulta <- paste0(
 
 df_defaults <- sqlQuery(ch, consulta)
 
-consulta
-
 kbl(df_defaults)
+
+```
+
+  2. Ver el share de préstamos en default por CIIU.
+
+```{r}
+
+consulta <- paste0(
+  "SELECT CIIU, ",
+  "CASE WHEN DIAS_DE_MORA >= 30 THEN 1 ELSE 0 END AS EN_MORA, ",
+  "COUNT(*) AS N_REG ",
+  "FROM ", tabla, " ",
+  "GROUP BY CIIU, EN_MORA"
+)
+
+df_ciiu <- sqlQuery(ch, consulta)
+
+kbl(df_ciiu)
+
+```
+
+  3. Ver el ratio de garantía/crédito por CIIU. 
+  
+```{r}
+
+# no calculo el ratio de entrada para poder tener las magnitudes en pesos
+
+consulta <- paste0(
+  "SELECT CIIU, ",
+  "SUM(VALOR_GARANTIA_ML) AS GARANTIA, ",
+  "SUM(SALDO_CAPITAL_ML) AS CAPITAL, ",
+  "SUM(SALDO_INTERESES_ML) AS INTERESES ",
+  "FROM ", tabla, " ",
+  "GROUP BY CIIU"
+)
+
+df_ratios <- sqlQuery(ch, consulta)
+
+df_ratios <- df_ratios %>% 
+  mutate(Ratio = SALDO_GARANTIA_ML / (SALDO_CAPITAL_ML + SALDO_INTERESES_ML))
+
+kbl(df_ratios)
+
+```
+
+  
+  4. Explorar que tan populado es el tipo de garantía y ver como varía su valor. 
+  
+```{r}
+
+consulta <- paste0(
+  "SELECT TIPO_GARANTIA, ",
+  "SUM(VALOR_GARANTIA_ML) AS VALOR_GARANTIA_ML, ",
+  "COUNT(*) AS N_REG, ",
+  "COUNT(VALOR_GARANTIA_ML) AS N_SINNA ",
+  "FROM ", tabla, " ",
+  "GROUP BY TIPO_GARANTIA"
+)
+
+df_garantias <- sqlQuery(ch, consulta)
+
+kbl(df_garantias)
 
 ```

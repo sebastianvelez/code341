@@ -20,6 +20,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(RODBC)
 library(readr)
 library(kableExtra)
+library(stringr)
+library(dplyr)
 
 # conexión con la bd
 ch <- odbcConnect("Teradata", uid = "jvelezve", pwd = "jindec2023")
@@ -140,7 +142,8 @@ consulta <- paste0(
   "GROUP BY CIIU, EN_MORA"
 )
 
-df_ciiu <- sqlQuery(ch, consulta)
+df_ciiu <- sqlQuery(ch, consulta) # esta arroja 908 mil observaciones. Además el CIIU que resulta tiene decimales. Hay que revisar que la variable CIIU si sean códigos CIIU (que deben ser mmuuuchos menos)
+
 
 kbl(df_ciiu)
 

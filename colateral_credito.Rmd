@@ -134,16 +134,26 @@ kbl(df_defaults)
 
 ```{r}
 
+# Consulta adicional
+# valores únicos de la columna CIIU
+
 consulta <- paste0(
-  "SELECT CIIU, ",
+  "SELECT DISTINCT CIIU ",
+  "FROM ", tabla
+)
+
+df_ciiu_unicos <- sqlQuery(ch, consulta)
+
+# CAST para forzar CIIU como varchar
+consulta <- paste0(
+  "SELECT CAST(CIIU AS VARCHAR(10)) AS CIIU, ",
   "CASE WHEN DIAS_DE_MORA >= 30 THEN 1 ELSE 0 END AS EN_MORA, ",
   "COUNT(*) AS N_REG ",
-  "FROM ", tabla, " ",
+   "FROM ", tabla, " ",
   "GROUP BY CIIU, EN_MORA"
 )
 
 df_ciiu <- sqlQuery(ch, consulta) # esta arroja 908 mil observaciones. Además el CIIU que resulta tiene decimales. Hay que revisar que la variable CIIU si sean códigos CIIU (que deben ser mmuuuchos menos)
-
 
 kbl(df_ciiu)
 
@@ -156,10 +166,10 @@ kbl(df_ciiu)
 # no calculo el ratio de entrada para poder tener las magnitudes en pesos
 
 consulta <- paste0(
-  "SELECT CIIU, ",
-  "SUM(VALOR_GARANTIA_ML) AS GARANTIA, ",
-  "SUM(SALDO_CAPITAL_ML) AS CAPITAL, ",
-  "SUM(SALDO_INTERESES_ML) AS INTERESES ",
+  "SELECT CAST(CIIU AS VARCHAR(10)) AS CIIU, ",
+  "COALESCE(SUM(VALOR_GARANTIA_ML), 0) AS GARANTIA, ",
+  "COALESCE(SUM(SALDO_CAPITAL_ML), 0) AS CAPITAL, ",
+  "COALESCE(SUM(SALDO_INTERESES_ML), 0) AS INTERESES ",
   "FROM ", tabla, " ",
   "GROUP BY CIIU"
 )
@@ -167,7 +177,7 @@ consulta <- paste0(
 df_ratios <- sqlQuery(ch, consulta)
 
 df_ratios <- df_ratios %>% 
-  mutate(Ratio = SALDO_GARANTIA_ML / (SALDO_CAPITAL_ML + SALDO_INTERESES_ML))
+  mutate(Ratio = GARANTIA / (CAPITAL + INTERESES))
 
 kbl(df_ratios)
 

@@ -138,7 +138,7 @@ kbl(df_defaults)
 # valores únicos de la columna CIIU
 
 consulta <- paste0(
-  "SELECT DISTINCT CIIU ",
+  "SELECT DISTINCT SUBSTRING(CIIU, 1, 4) AS CIIU, ",
   "FROM ", tabla
 )
 
@@ -146,7 +146,7 @@ df_ciiu_unicos <- sqlQuery(ch, consulta)
 
 # CAST para forzar CIIU como varchar
 consulta <- paste0(
-  "SELECT CAST(CIIU AS VARCHAR(10)) AS CIIU, ",
+  "SELECT SUBSTRING(CIIU, 1, 4) AS CIIU, ",
   "CASE WHEN DIAS_DE_MORA >= 30 THEN 1 ELSE 0 END AS EN_MORA, ",
   "COUNT(*) AS N_REG ",
    "FROM ", tabla, " ",
@@ -166,7 +166,7 @@ kbl(df_ciiu)
 # no calculo el ratio de entrada para poder tener las magnitudes en pesos
 
 consulta <- paste0(
-  "SELECT CAST(CIIU AS VARCHAR(10)) AS CIIU, ",
+  "SELECT SUBSTRING(CIIU, 1, 4) AS CIIU, ",
   "COALESCE(SUM(VALOR_GARANTIA_ML), 0) AS GARANTIA, ",
   "COALESCE(SUM(SALDO_CAPITAL_ML), 0) AS CAPITAL, ",
   "COALESCE(SUM(SALDO_INTERESES_ML), 0) AS INTERESES ",

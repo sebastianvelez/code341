@@ -134,17 +134,7 @@ kbl(df_defaults)
 
 ```{r}
 
-# Consulta adicional
-# valores únicos de la columna CIIU
-
-consulta <- paste0(
-  "SELECT DISTINCT SUBSTRING(CIIU, 1, 4) AS CIIU, ",
-  "FROM ", tabla
-)
-
-df_ciiu_unicos <- sqlQuery(ch, consulta)
-
-# CAST para forzar CIIU como varchar
+# cortamos la CIIU a los primeros 4 dígitos
 consulta <- paste0(
   "SELECT SUBSTRING(CIIU, 1, 4) AS CIIU, ",
   "CASE WHEN DIAS_DE_MORA >= 30 THEN 1 ELSE 0 END AS EN_MORA, ",
@@ -153,7 +143,7 @@ consulta <- paste0(
   "GROUP BY CIIU, EN_MORA"
 )
 
-df_ciiu <- sqlQuery(ch, consulta) # esta arroja 908 mil observaciones. Además el CIIU que resulta tiene decimales. Hay que revisar que la variable CIIU si sean códigos CIIU (que deben ser mmuuuchos menos)
+df_ciiu <- sqlQuery(ch, consulta) 
 
 kbl(df_ciiu)
 
@@ -162,8 +152,6 @@ kbl(df_ciiu)
   3. Ver el ratio de garantía/crédito por CIIU. 
   
 ```{r}
-
-# no calculo el ratio de entrada para poder tener las magnitudes en pesos
 
 consulta <- paste0(
   "SELECT SUBSTRING(CIIU, 1, 4) AS CIIU, ",

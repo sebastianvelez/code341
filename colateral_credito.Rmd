@@ -136,7 +136,7 @@ kbl(df_defaults)
 
 # cortamos la CIIU a los primeros 4 dígitos
 consulta <- paste0(
-  "SELECT SUBSTRING(CIIU, 1, 4) AS CIIU, ",
+  "SELECT SUBSTR(CAST(CIIU AS VARCHAR(12)), 1, 4) AS CIIU, ",
   "CASE WHEN DIAS_DE_MORA >= 30 THEN 1 ELSE 0 END AS EN_MORA, ",
   "COUNT(*) AS N_REG ",
    "FROM ", tabla, " ",

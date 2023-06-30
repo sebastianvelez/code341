@@ -55,6 +55,7 @@ Creo estas tres cosas se deben hacer por tipo de crédito (CARTERA_TIPO)
 ## Valores faltantes
 
 ```{r NAS, eval=FALSE}
+
 library(stringr)
 
 consulta <- character()
@@ -150,7 +151,7 @@ consulta <- paste0(
   "FROM ", tabla, " ",
   "GROUP BY CIIU"
 )
-
+ 
 df_ciiu <- sqlQuery(ch, consulta) 
 
 kbl(df_ciiu)

@@ -162,11 +162,22 @@ kbl(df_ciiu)
   
 ```{r}
 
+# consulta <- paste0(
+#   "SELECT SUBSTRING(CIIU, 1, 4) AS CIIU, ",
+#   "COALESCE(SUM(VALOR_GARANTIA_ML), 0) AS GARANTIA, ",
+#   "COALESCE(SUM(SALDO_CAPITAL_ML), 0) AS CAPITAL, ",
+#   "COALESCE(SUM(SALDO_INTERESES_ML), 0) AS INTERESES ",
+#   "FROM ", tabla, " ",
+#   "GROUP BY CIIU"
+# )
+
+# 1. CAST sobre CIIU para quitar los leading 0s. 
+# 2. quitar COALESCE para evitar largo tiempo de ejecución (si marca error, se regresa)
 consulta <- paste0(
-  "SELECT SUBSTRING(CIIU, 1, 4) AS CIIU, ",
-  "COALESCE(SUM(VALOR_GARANTIA_ML), 0) AS GARANTIA, ",
-  "COALESCE(SUM(SALDO_CAPITAL_ML), 0) AS CAPITAL, ",
-  "COALESCE(SUM(SALDO_INTERESES_ML), 0) AS INTERESES ",
+  "SELECT CAST(SUBSTRING(CIIU, 1, 4) AS INTEGER) AS CIIU, ",
+  "SUM(VALOR_GARANTIA_ML) AS GARANTIA, ",
+  "SUM(SALDO_CAPITAL_ML) AS CAPITAL, ",
+  "SUM(SALDO_INTERESES_ML) AS INTERESES ",
   "FROM ", tabla, " ",
   "GROUP BY CIIU"
 )
@@ -224,5 +235,57 @@ consulta
 df_ts <- sqlQuery(ch, consulta)
 
 kbl(df_ts)
+
+```
+
+## Filtrado de la base
+
+Comparamos el número de registros totales contra el número de nuevos registros (esto es, aquellos cuya fecha de información sea menor a 90 días de la fecha inicial del crédito).
+
+```{r}
+
+consulta <- paste0(
+  "SELECT FECHA_INFORMACION, ",
+  " COUNT(*) AS N_REG",
+  " FROM ", tabla, " ",
+  " GROUP BY FECHA_INFORMACION"
+)
+
+df_dt_base <- sqlQuery(ch, consulta)
+
+consulta <- paste0(
+  "SELECT FECHA_INFORMACION, ",
+  " COUNT(*) AS N_REG",
+  " FROM ", tabla, " ",
+  " WHERE (CAST(FECHA_INFORMACION AS DATE) - CAST(FECHA_INICIAL_DEL_CREDITO AS DATE)) < 90",
+  " GROUP BY FECHA_INFORMACION"
+)
+
+df_dt <- sqlQuery(ch, consulta)
+
+df_dt <- df_dt %>% 
+  left_join(df_dt_base, by = "FECHA_INFORMACION")
+
+```
+
+## Comparativo por tipo de acreditado
+
+Siguiendo lo anterior, comparamos algunas estadísticas entre ambos tipos de acreditado. 
+
+```{r}
+
+# Comparativo
+consulta <- paste0(
+  "SELECT ",
+  "CASE WHEN (CAST(FECHA_INFORMACION AS DATE) - CAST(FECHA_INICIAL_DEL_CREDITO AS DATE)) < 90 THEN 'NUEVO' ELSE 'RECURRENTE' END AS TIPO_ACREDITADO, ",
+  "AVG(TASA_PROMEDIO_DEL_CREDITO) AS TASA_PROMEDIO, ",
+  "AVG(SALDO_CAPITAL) AS SALDO_CAPITAL ",
+  " FROM ", tabla, " ",
+  "GROUP BY TIPO_ACREDITADO"
+)
+
+consulta
+
+df_acreditado <- sqlQuery(ch, consulta)
 
 ```

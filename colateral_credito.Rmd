@@ -253,15 +253,27 @@ consulta <- paste0(
 
 df_dt_base <- sqlQuery(ch, consulta)
 
+# V1
 consulta <- paste0(
   "SELECT FECHA_INFORMACION, ",
   " COUNT(*) AS N_REG",
   " FROM ", tabla, " ",
-  " WHERE (CAST(FECHA_INFORMACION AS DATE) - CAST(FECHA_INICIAL_DEL_CREDITO AS DATE)) < 90",
+  " WHERE (To_Date(FECHA_INFORMACION, 'yyyymmdd') - To_Date(FECHA_INICIAL_DEL_CREDITO, 'yyyymmdd')) < 90",
   " GROUP BY FECHA_INFORMACION"
 )
 
 df_dt <- sqlQuery(ch, consulta)
+
+# V2
+# consulta <- paste0(
+#   "SELECT FECHA_INFORMACION, ",
+#   " COUNT(*) AS N_REG",
+#   " FROM ", tabla, " ",
+#   " WHERE (DATEDIFF(day, To_Date(FECHA_INICIAL_DEL_CREDITO, 'yyyymmdd'), To_Date(FECHA_INFORMACION, 'yyyymmdd'))) < 90",
+#   " GROUP BY FECHA_INFORMACION"
+# )
+# 
+# df_dt <- sqlQuery(ch, consulta)
 
 df_dt <- df_dt %>% 
   left_join(df_dt_base, by = "FECHA_INFORMACION")
@@ -275,17 +287,29 @@ Siguiendo lo anterior, comparamos algunas estadísticas entre ambos tipos de acr
 ```{r}
 
 # Comparativo
+
+# V1
 consulta <- paste0(
   "SELECT ",
-  "CASE WHEN (CAST(FECHA_INFORMACION AS DATE) - CAST(FECHA_INICIAL_DEL_CREDITO AS DATE)) < 90 THEN 'NUEVO' ELSE 'RECURRENTE' END AS TIPO_ACREDITADO, ",
+  "CASE WHEN (To_Date(FECHA_INFORMACION, 'yyyymmdd') - To_Date(FECHA_INICIAL_DEL_CREDITO, 'yyyymmdd')) < 90 THEN 'NUEVO' ELSE 'RECURRENTE' END AS TIPO_ACREDITADO, ",
   "AVG(TASA_PROMEDIO_DEL_CREDITO) AS TASA_PROMEDIO, ",
   "AVG(SALDO_CAPITAL) AS SALDO_CAPITAL ",
   " FROM ", tabla, " ",
   "GROUP BY TIPO_ACREDITADO"
 )
 
-consulta
-
 df_acreditado <- sqlQuery(ch, consulta)
+
+# V2
+# consulta <- paste0(
+#   "SELECT ",
+#   "CASE WHEN (DATEDIFF(day, To_Date(FECHA_INICIAL_DEL_CREDITO, 'yyyymmdd'), To_Date(FECHA_INFORMACION, 'yyyymmdd'))) < 90 THEN 'NUEVO' ELSE 'RECURRENTE' END AS TIPO_ACREDITADO, ",
+#   "AVG(TASA_PROMEDIO_DEL_CREDITO) AS TASA_PROMEDIO, ",
+#   "AVG(SALDO_CAPITAL) AS SALDO_CAPITAL ",
+#   " FROM ", tabla, " ",
+#   "GROUP BY TIPO_ACREDITADO"
+# )
+# 
+# df_acreditado <- sqlQuery(ch, consulta)
 
 ```

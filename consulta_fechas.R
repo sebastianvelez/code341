@@ -6,7 +6,7 @@ tabla <- "PRO_SK_DATA_V.V_GT23_F341_SOL1"
 
 # Consulta usando funciones propias de Teradata
 consulta <- paste0(
-  "SELECT DISTINCT To_Date(FECHA_INFORMACION)",
+  "SELECT DISTINCT TO_DATE(FECHA_INFORMACION, 'YYYYMMDD') AS FECHA_INFORMACION",
   " FROM ", tabla
 )
 
@@ -14,9 +14,19 @@ consulta <- paste0(
 fechas_dt <- sqlQuery(ch, consulta)
 
 # Camino alternativo (usando funciones de SQL base)
+# consulta <- paste0(
+#   "SELECT DISTINCT CAST(CAST(FECHA_INFORMACION AS VARCHAR(8)) AS DATE)",
+#   " FROM ", tabla
+# )
+# 
+# fechas_sql <- sqlQuery(ch, consulta)
+
 consulta <- paste0(
-  "SELECT DISTINCT CAST(CAST(FECHA_INFORMACION AS VARCHAR(8)) AS DATE)",
-  " FROM ", tabla
+  "SELECT FECHA_INFORMACION, FECHA_INICIAL_DEL_CREDITO,",
+  " TO_DATE(FECHA_INFORMACION, 'YYYYMMDD') - TO_DATE(FECHA_INICIAL_DEL_CREDITO, 'YYYYMMDD') AS DIAS_ORIGINACION",
+  " FROM ", tabla,
+  " SAMPLE 10000"
 )
 
-fechas_sql <- sqlQuery(ch, consulta)
+# muestra de diferencia de fechas
+muestra_fechas <- sqlQuery(ch, consulta)

@@ -6,9 +6,15 @@ tabla <- "PRO_SK_DATA_V.V_GT23_F341_SOL1"
 
 # Consulta usando funciones propias de Teradata
 consulta <- paste0(
-  "SELECT DISTINCT TO_DATE(FECHA_INFORMACION, 'YYYYMMDD') AS FECHA_INFORMACION",
+  "SELECT DISTINCT TO_DATE(TO_CHAR(FECHA_INFORMACION, '999999'), 'YYYYMMDD') AS FECHA_INFORMACION",
   " FROM ", tabla
 )
+
+# V2 (en caso de que la consulta anterior no funcione)
+# consulta <- paste0(
+#   "SELECT DISTINCT TO_DATE(FECHA_INFORMACION) AS FECHA_INFORMACION",
+#   " FROM ", tabla
+# )
 
 # ¿Regresa valores en formato fecha? 
 fechas_dt <- sqlQuery(ch, consulta)

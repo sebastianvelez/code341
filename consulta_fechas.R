@@ -5,16 +5,17 @@ ch <- odbcConnect("Teradata", uid = "jvelezve", pwd = "jindec2023")
 tabla <- "PRO_SK_DATA_V.V_GT23_F341_SOL1"
 
 # (1) Consulta usando funciones propias de Teradata (JSVV)
-consulta <- paste0("SELECT DISTINCT ",
-                   "CAST(FECHA_INFORMACION - 19000000 AS DATE) ",
+consulta <- paste0("SELECT DISTINCT",
+                   " CAST(FECHA_INFORMACION - 19000000 AS DATE),",
+                   " CAST(CAST(CAST(FECHA_INFORMACION AS INT) AS VARCHAR) AS DATE)",
                    "FROM ", tabla)
 
-df_fechas <- dbGetQuery(conn, consulta)
+df_fechas <- sqlQuery(conn, consulta)
 
 # (2) Validar que el álgebra funcione como debe
 consulta <- paste0(
   "SELECT FECHA_INFORMACION, FECHA_INICIAL_DEL_CREDITO,",
-  " CAST(FECHA_INFORMACION - 19000000 AS DATE) - CAST(FECHA_INICIAL_DEL_CREDITO - 19000000 AS DATE) AS DIAS_ORIGINACION",
+  " CAST(CAST(CAST(FECHA_INFORMACION AS INT) AS VARCHAR) AS DATE) - CAST(CAST(CAST(FECHA_INICIAL_DEL_CREDITO AS INT) AS VARCHAR) AS DATE) AS DIAS_ORIGINACION",
   " FROM ", tabla,
   " SAMPLE 1000"
 )
@@ -25,9 +26,9 @@ muestra_fechas <- sqlQuery(ch, consulta)
 # (3) ¿Cuántos créditos son nuevos?
 consulta <- paste0(
   "SELECT FECHA_INFORMACION,",
-  " CASE WHEN CAST(FECHA_INFORMACION - 19000000 AS DATE) - CAST(FECHA_INICIAL_DEL_CREDITO - 19000000 AS DATE) < 90 THEN 'NUEVO' ELSE 'RECURRENTE' END AS TIPO_ACREDITADO,",
+  " CAST(CAST(CAST(FECHA_INFORMACION AS INT) AS VARCHAR) AS DATE) - CAST(CAST(CAST(FECHA_INICIAL_DEL_CREDITO AS INT) AS VARCHAR) AS DATE) < 90 THEN 'NUEVO' ELSE 'RECURRENTE' END AS TIPO_ACREDITADO,",
   " COUNT(*) AS N_REG",
-  " FROM ", tabla, " ",
+  " FROM ", tabla,
   " GROUP BY FECHA_INFORMACION, TIPO_ACREDITADO"
 )
 

@@ -23,6 +23,11 @@ consulta <- paste0(
 
 res_tipo_acreditado <- sqlQuery(ch, consulta)
 
+ratio_garantia <- res_tipo_acreditado %>% 
+  rename(TIPO_ACREDITADO = 2) %>% 
+  filter(TIPO_ACREDITADO == "NUEVO") %>% 
+  mutate(RATIO_GARANTIA = GARANTIA / (CAPITAL + INTERESES))
+
 # estadistica descriptiva (por CIIU)
 consulta <- paste0(
   "SELECT FECHA_INFORMACION,",
@@ -41,3 +46,17 @@ consulta <- paste0(
 )
 
 res_ciiu <- sqlQuery(ch, consulta)
+
+# última fecha de avalúo
+consulta <- paste0(
+  "SELECT FECHA_INFORMACION,",
+  " COUNT(*) AS N_REG,",
+  " COUNT(FECHA_ULTIMO_AVALUO_GARANTIA) AS N_REG_AVALUO,",
+  " AVG(CAST(FECHA_INFORMACION - 19000000 AS DATE) - CAST(FECHA_ULTIMO_AVALUO_GARANTIA - 19000000 AS DATE)),",
+  " STDDEV_SAMP(CAST(FECHA_INFORMACION - 19000000 AS DATE) - CAST(FECHA_ULTIMO_AVALUO_GARANTIA - 19000000 AS DATE))",
+  " FROM ", tabla,
+  " WHERE CAST(FECHA_ULTIMO_AVALUO_GARANTIA AS INTEGER) BETWEEN 19600101 AND 20231231",
+  " GROUP BY FECHA_INFORMACION"
+)
+
+res_fecha_avaluo <- sqlQuery(ch, consulta)

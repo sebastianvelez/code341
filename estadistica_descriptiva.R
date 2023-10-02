@@ -1,3 +1,5 @@
+library(RODBC)
+
 # conexion con la bd
 ch <- odbcConnect("Teradata", uid = "jvelezve", pwd = "Jimnyjb74")
 

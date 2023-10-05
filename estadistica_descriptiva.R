@@ -60,3 +60,17 @@ consulta <- paste0(
 )
 
 res_fecha_avaluo <- sqlQuery(ch, consulta)
+
+# estadistica descriptiva (acreditado individual)
+consulta <- paste0(
+  "SELECT IDENTIFICACION_DEUDOR,",
+  " COUNT(*) AS N_REG,",
+  " AVG(SALDO_CAPITAL) AS PROMEDIO_CAPITAL,",
+  " AVG(VALOR_GARANTIA) AS PROMEDIO_GARANTIA,",
+  " STDDEV_SAMP(SALDO_CAPITAL) AS SD_CAPITAL,",
+  " STDDEV_SAMP(VALOR_GARANTIA) AS SD_GARANTIA",
+  " FROM ", tabla,
+  " GROUP BY IDENTIFICACION_DEUDOR"
+)
+
+res_acreditados <- sqlQuery(ch, consulta)

@@ -1,4 +1,5 @@
 library(RODBC)
+library(dplyr)
 
 # conexion con la bd
 ch <- odbcConnect("Teradata", uid = "jvelezve", pwd = "Jimnyjb74")
@@ -23,9 +24,9 @@ consulta <- paste0(
 
 res_tipo_acreditado <- sqlQuery(ch, consulta)
 
-ratio_garantia <- res_tipo_acreditado %>% 
-  rename(TIPO_ACREDITADO = 2) %>% 
-  filter(TIPO_ACREDITADO == "NUEVO") %>% 
+ratio_garantia <- res_tipo_acreditado %>%
+  rename(TIPO_ACREDITADO = 2) %>%
+  filter(TIPO_ACREDITADO == "NUEVO") %>%
   mutate(RATIO_GARANTIA = GARANTIA / (CAPITAL + INTERESES))
 
 # estadistica descriptiva (por CIIU)
@@ -74,3 +75,12 @@ consulta <- paste0(
 )
 
 res_acreditados <- sqlQuery(ch, consulta)
+
+
+save(ratio_garantia,file = "C:/Users/jvelezve/OneDrive - Banco de la República/Documents/Bancos/Felipe and Rebecca/output/ratio_garantia.rdata")
+
+save(res_ciiu, file = "C:/Users/jvelezve/OneDrive - Banco de la República/Documents/Bancos/Felipe and Rebecca/output/res_ciiu.rdata")
+
+save(res_tipo_acreditado, file = "C:/Users/jvelezve/OneDrive - Banco de la República/Documents/Bancos/Felipe and Rebecca/output/res_tipo_acreditado.rdata")
+
+save(res_acreditados, file = "C:/Users/jvelezve/OneDrive - Banco de la República/Documents/Bancos/Felipe and Rebecca/output/res_acreditados.rdata")

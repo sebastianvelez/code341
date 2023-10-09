@@ -56,7 +56,7 @@ consulta <- paste0(
   " AVG(CAST(FECHA_INFORMACION - 19000000 AS DATE) - CAST(FECHA_ULTIMO_AVALUO_GARANTIA - 19000000 AS DATE)),",
   " STDDEV_SAMP(CAST(FECHA_INFORMACION - 19000000 AS DATE) - CAST(FECHA_ULTIMO_AVALUO_GARANTIA - 19000000 AS DATE))",
   " FROM ", tabla,
-  " WHERE CAST(FECHA_ULTIMO_AVALUO_GARANTIA AS INTEGER) BETWEEN 19600101 AND 20231231",
+  " WHERE CAST(FECHA_ULTIMO_AVALUO_GARANTIA AS INTEGER) BETWEEN 20000101 AND 20231231",
   " GROUP BY FECHA_INFORMACION"
 )
 
@@ -77,10 +77,10 @@ consulta <- paste0(
 res_acreditados <- sqlQuery(ch, consulta)
 
 
-save(ratio_garantia,file = "C:/Users/jvelezve/OneDrive - Banco de la República/Documents/Bancos/Felipe and Rebecca/output/ratio_garantia.rdata")
+save(ratio_garantia,file = "C:/Users/jvelezve/OneDrive - Banco de la RepÃºblica/Documents/Bancos/Felipe and Rebecca/output/ratio_garantia.rdata")
 
-save(res_ciiu, file = "C:/Users/jvelezve/OneDrive - Banco de la República/Documents/Bancos/Felipe and Rebecca/output/res_ciiu.rdata")
+save(res_ciiu, file = "C:/Users/jvelezve/OneDrive - Banco de la RepÃºblica/Documents/Bancos/Felipe and Rebecca/output/res_ciiu.rdata")
 
-save(res_tipo_acreditado, file = "C:/Users/jvelezve/OneDrive - Banco de la República/Documents/Bancos/Felipe and Rebecca/output/res_tipo_acreditado.rdata")
+save(res_tipo_acreditado, file = "C:/Users/jvelezve/OneDrive - Banco de la RepÃºblica/Documents/Bancos/Felipe and Rebecca/output/res_tipo_acreditado.rdata")
 
-save(res_acreditados, file = "C:/Users/jvelezve/OneDrive - Banco de la República/Documents/Bancos/Felipe and Rebecca/output/res_acreditados.rdata")
+save(res_acreditados, file = "C:/Users/jvelezve/OneDrive - Banco de la RepÃºblica/Documents/Bancos/Felipe and Rebecca/output/res_acreditados.rdata")
